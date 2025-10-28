@@ -1,7 +1,9 @@
-package com.shyze.linkservice.repository;
+package com.links.linkservice.repository;
 
-import com.shyze.linkservice.model.Link;
+import com.links.linkservice.model.Link;
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.Optional;
 
 public interface LinkRepository extends JpaRepository<Link, Long> {
 
@@ -16,5 +18,5 @@ public interface LinkRepository extends JpaRepository<Link, Long> {
     */
     
     // add here specific methods if necessary
-    // ...
+    Optional<Link> findByTitle(String title);
 }

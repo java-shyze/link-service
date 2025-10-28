@@ -1,4 +1,4 @@
-package com.shyze.linkservice.model;
+package com.links.linkservice.model;
 
 import jakarta.persistence.*;
 
