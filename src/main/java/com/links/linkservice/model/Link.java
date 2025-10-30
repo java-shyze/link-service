@@ -18,11 +18,6 @@ public class Link {
     @Column(name = "title", nullable = false)
     private String title;
 
-    @Override
-    public String toString() {
-        return "Link [url=" + url + ", title=" + title + "]";
-    }
-
     // CTORs
     public Link () {}
 
@@ -58,5 +53,10 @@ public class Link {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    @Override
+    public String toString() {
+        return "Link [url=" + url + ", title=" + title + "]";
     }
 }
