@@ -12,11 +12,11 @@ public class Link {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "url", nullable = false)
-    private String url;
-
     @Column(name = "title", nullable = false)
     private String title;
+
+    @Column(name = "url", nullable = false)
+    private String url;
 
     // CTORs
     public Link () {}
@@ -25,9 +25,9 @@ public class Link {
         this.url = url;
     }
 
-    public Link(String url, String title) {
-        this.url = url;
+    public Link(String title, String url) {
         this.title = title;
+        this.url = url;
     }
 
     // Getters and Setters
@@ -39,14 +39,6 @@ public class Link {
         this.id = id;
     }
 
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
     public String getTitle() {
         return title;
     }
@@ -55,8 +47,16 @@ public class Link {
         this.title = title;
     }
 
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
     @Override
     public String toString() {
-        return "Link [url=" + url + ", title=" + title + "]";
+        return "Link [title=" + title + ", url=" + url + "]";
     }
 }
