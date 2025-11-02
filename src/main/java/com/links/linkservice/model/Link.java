@@ -6,28 +6,26 @@ import jakarta.persistence.*;
 @Table(name = "links")
 public class Link {
 
-    // fields
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "title", nullable = false)
-    private String title;
-
-    @Column(name = "url", nullable = false)
+    @Column(name = "url", nullable = false) // original url
     private String url;
 
-    // CTORs
+    @Column(name = "title") // short url
+    private String title;
+   
     public Link () {}
 
     public Link(String url) { 
         this.url = url;
     }
 
-    public Link(String title, String url) {
-        this.title = title;
+    public Link(String url, String title) {
         this.url = url;
+        this.title = title;
     }
 
     // Getters and Setters
@@ -39,14 +37,6 @@ public class Link {
         this.id = id;
     }
 
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
     public String getUrl() {
         return url;
     }
@@ -55,8 +45,16 @@ public class Link {
         this.url = url;
     }
 
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
     @Override
     public String toString() {
-        return "Link [title=" + title + ", url=" + url + "]";
+        return "Link [url=" + url + ", title=" + title + "]";
     }
 }
