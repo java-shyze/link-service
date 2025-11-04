@@ -11,10 +11,10 @@ public class Link {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "url", nullable = false) // original url
+    @Column(name = "url", nullable = false) 
     private String url;
 
-    @Column(name = "alias", nullable = false) // short url
+    @Column(name = "alias", nullable = false)
     private String alias;
    
     public Link () {}
