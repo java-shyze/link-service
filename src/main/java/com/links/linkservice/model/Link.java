@@ -14,21 +14,16 @@ public class Link {
     @Column(name = "url", nullable = false) // original url
     private String url;
 
-    @Column(name = "title") // short url
-    private String title;
+    @Column(name = "alias", nullable = false) // short url
+    private String alias;
    
     public Link () {}
 
-    public Link(String url) { 
+    public Link(String url, String alias) {
         this.url = url;
+        this.alias = alias;
     }
 
-    public Link(String url, String title) {
-        this.url = url;
-        this.title = title;
-    }
-
-    // Getters and Setters
     public Long getId() {
         return id;
     }
@@ -45,16 +40,16 @@ public class Link {
         this.url = url;
     }
 
-    public String getTitle() {
-        return title;
+    public String getAlias() {
+        return alias;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setAlias(String alias) {
+        this.alias = alias;
     }
 
     @Override
     public String toString() {
-        return "Link [url=" + url + ", title=" + title + "]";
+        return "Link [url=" + url + ", alias=" + alias + "]";
     }
 }

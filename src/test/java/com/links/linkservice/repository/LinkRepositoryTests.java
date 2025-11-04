@@ -1,131 +1,84 @@
 package com.links.linkservice.repository;
 
+import com.links.linkservice.config.EnvConfig;
 import com.links.linkservice.model.Link;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.test.annotation.Commit;
 
 import java.util.List;
-import java.util.Optional;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
-@Testcontainers
 @Transactional
 public class LinkRepositoryTests {
 
-    @Container
-    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:15-alpine")
-        .withDatabaseName("testdb")
-        .withUsername("testuser")
-        .withPassword("testpass");
-
-    @DynamicPropertySource
-    static void configureProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", postgres::getJdbcUrl);
-        registry.add("spring.datasource.username", postgres::getUsername);
-        registry.add("spring.datasource.password", postgres::getPassword);
-        registry.add("spring.jpa.hibernate.ddl-auto", () -> "create-drop");
+    static {
+        EnvConfig.loadEnv();
     }
 
     @Autowired
     private LinkRepository linkRepository;
 
     @Test
-    void shouldSaveAndFindLink() {
-        // Given
-        Link link = new Link("https://example.com", "Test Title");
-
-        // When
-        Link savedLink = linkRepository.save(link);
-        Optional<Link> foundLink = linkRepository.findById(savedLink.getId());
-
-        // Then
-        assertThat(foundLink).isPresent();
-        assertThat(foundLink.get().getUrl()).isEqualTo("https://example.com");
-        assertThat(foundLink.get().getTitle()).isEqualTo("Test Title");
-    }
-
-    @Test
-    void shouldFindAllLinks() {
-        // Given
-        Link link1 = new Link("https://example1.com", "Title 1");
-        Link link2 = new Link("https://example2.com", "Title 2");
+    @Commit
+    void CRUD() {
+        linkRepository.deleteAll();
         
-        linkRepository.save(link1);
-        linkRepository.save(link2);
+        // ~~~ CREATE ~~~
+        Link link1 = new Link ("https://example1.com", "Alias 1");
+        Link link2 = new Link ("https://example2.com", "Alias 2");
 
-        // When
-        List<Link> links = linkRepository.findAll();
+        Link savedLink1 = linkRepository.save(link1);
+        Link savedLink2 = linkRepository.save(link2);
 
-        // Then
-        assertThat(links).hasSize(2);
-        assertThat(links).extracting(Link::getUrl)
-                        .containsExactlyInAnyOrder("https://example1.com", "https://example2.com");
-    }
+        assertThat(savedLink1.getId()).isNotNull();
+        assertThat(savedLink2.getId()).isNotNull();
 
-    @Test
-    void shouldUpdateLink() {
-        // Given
-        Link link = new Link("https://original.com", "Original Title");
-        Link savedLink = linkRepository.save(link);
+        assertThat(savedLink1.getUrl()).isEqualTo("https://example1.com");
+        assertThat(savedLink1.getAlias()).isEqualTo("Alias 1");
+        assertThat(savedLink2.getUrl()).isEqualTo("https://example2.com");
+        assertThat(savedLink2.getAlias()).isEqualTo("Alias 2");
 
-        // When
-        savedLink.setUrl("https://updated.com");
-        savedLink.setTitle("Updated Title");
-        Link updatedLink = linkRepository.save(savedLink);
+        // ~~~ READ ~~~
+        Link foundLink1 = linkRepository.findById(savedLink1.getId())
+            .orElseThrow(() -> new RuntimeException("URL 1 not found."));
+        Link foundLink2 = linkRepository.findById(savedLink2.getId())
+            .orElseThrow(() -> new RuntimeException("URL 2 not found."));
 
-        // Then
-        assertThat(updatedLink.getUrl()).isEqualTo("https://updated.com");
-        assertThat(updatedLink.getTitle()).isEqualTo("Updated Title");
-    }
+        assertThat(foundLink1).isEqualTo(savedLink1);
+        assertThat(foundLink2).isEqualTo(savedLink2);
 
-    @Test
-    void shouldDeleteLink() {
-        // Given
-        Link link = new Link("https://delete.com", "To Delete");
-        Link savedLink = linkRepository.save(link);
-        
-        Long id = savedLink.getId();
-        assertThat(linkRepository.findById(id)).isPresent();
+        List<Link> allLinks = linkRepository.findAll();
 
-        // When
-        linkRepository.deleteById(id);
+        assertThat(allLinks).hasSize(2);
+        assertThat(allLinks).containsExactly(savedLink1, savedLink2);
 
-        // Then
-        assertThat(linkRepository.findById(id)).isEmpty();
-    }
+        // ~~~ UPDATE ~~~
+        foundLink1.setUrl("https://updated-example1.com");
+        foundLink1.setAlias("Updated Alias 1");
+        Link updatedLink = linkRepository.save(foundLink1);
 
-    @Test
-    void shouldFindLinkByTitle() {
-        // Given
-        String title = "Unique Title";
-        Link link = new Link("https://unique.com", title);
-        linkRepository.save(link);
+        assertThat(updatedLink.getId()).isEqualTo(savedLink1.getId());
+        assertThat(updatedLink.getUrl()).isEqualTo("https://updated-example1.com");
+        assertThat(updatedLink.getAlias()).isEqualTo("Updated Alias 1");
 
-        // When
-        Optional<Link> foundLink = linkRepository.findByTitle(title);
+        // additional check "read"
+        Link retrievedAfterUpdate = linkRepository.findById(savedLink1.getId())
+            .orElseThrow(() -> new RuntimeException("URL not found after update"));
+        assertThat(retrievedAfterUpdate.getUrl()).isEqualTo("https://updated-example1.com");
+        assertThat(retrievedAfterUpdate.getAlias()).isEqualTo("Updated Alias 1");
 
-        // Then
-        assertThat(foundLink).isPresent();
-        assertThat(foundLink.get().getUrl()).isEqualTo("https://unique.com");
-        assertThat(foundLink.get().getTitle()).isEqualTo(title);
-    }
+        // ~~~ DELETE ~~~
+        linkRepository.deleteById(savedLink2.getId());
 
-    @Test
-    void shouldReturnEmptyWhenTitleNotFound() {
-        // When
-        Optional<Link> foundLink = linkRepository.findByTitle("NonExistentTitle");
+        assertThat(linkRepository.findById(savedLink2.getId())).isEmpty();
 
-        // Then
-        assertThat(foundLink).isEmpty();
+        List<Link> linksAfterDelete = linkRepository.findAll();
+        assertThat(linksAfterDelete).hasSize(1);
+        assertThat(linksAfterDelete).containsExactly(updatedLink);
     }
 }

@@ -4,8 +4,6 @@ import com.links.linkservice.model.Link;
 import org.springframework.stereotype.Repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.Optional;
-
 @Repository
 public interface LinkRepository extends JpaRepository<Link, Long> {
 
@@ -20,5 +18,4 @@ public interface LinkRepository extends JpaRepository<Link, Long> {
     */
     
     // add here specific methods if necessary
-    Optional<Link> findByTitle(String title);
 }
