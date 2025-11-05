@@ -5,3 +5,4 @@ target/
 !**/src/test/**/target/
 
 .vscode/
+.env
