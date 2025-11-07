@@ -1,0 +1,6 @@
+{
+    "tabWidth": 4,
+    "editor.formatOnSave": true,
+    "bracketSpacing": true,
+    "printWidth": 70
+}

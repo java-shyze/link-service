@@ -11,13 +11,14 @@ public class Link {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "url", nullable = false) 
+    @Column(name = "url", nullable = false)
     private String url;
 
     @Column(name = "alias", nullable = false)
     private String alias;
-   
-    public Link () {}
+
+    public Link() {
+    }
 
     public Link(String url, String alias) {
         this.url = url;
@@ -50,6 +51,6 @@ public class Link {
 
     @Override
     public String toString() {
-        return "Link [url=" + url + ", alias=" + alias + "]";
+        return "Link [url = " + url + ", alias = " + alias + "]";
     }
 }

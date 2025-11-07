@@ -27,10 +27,10 @@ public class LinkRepositoryTests {
     @Commit
     void CRUD() {
         linkRepository.deleteAll();
-        
+
         // ~~~ CREATE ~~~
-        Link link1 = new Link ("https://example1.com", "Alias 1");
-        Link link2 = new Link ("https://example2.com", "Alias 2");
+        Link link1 = new Link("https://example1.com", "Alias 1");
+        Link link2 = new Link("https://example2.com", "Alias 2");
 
         Link savedLink1 = linkRepository.save(link1);
         Link savedLink2 = linkRepository.save(link2);
@@ -45,9 +45,9 @@ public class LinkRepositoryTests {
 
         // ~~~ READ ~~~
         Link foundLink1 = linkRepository.findById(savedLink1.getId())
-            .orElseThrow(() -> new RuntimeException("URL 1 not found."));
+                .orElseThrow(() -> new RuntimeException("URL 1 not found."));
         Link foundLink2 = linkRepository.findById(savedLink2.getId())
-            .orElseThrow(() -> new RuntimeException("URL 2 not found."));
+                .orElseThrow(() -> new RuntimeException("URL 2 not found."));
 
         assertThat(foundLink1).isEqualTo(savedLink1);
         assertThat(foundLink2).isEqualTo(savedLink2);
@@ -68,7 +68,7 @@ public class LinkRepositoryTests {
 
         // additional check "read"
         Link retrievedAfterUpdate = linkRepository.findById(savedLink1.getId())
-            .orElseThrow(() -> new RuntimeException("URL not found after update"));
+                .orElseThrow(() -> new RuntimeException("URL not found after update"));
         assertThat(retrievedAfterUpdate.getUrl()).isEqualTo("https://updated-example1.com");
         assertThat(retrievedAfterUpdate.getAlias()).isEqualTo("Updated Alias 1");
 
