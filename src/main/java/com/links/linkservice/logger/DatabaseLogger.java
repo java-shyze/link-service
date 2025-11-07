@@ -1,5 +1,5 @@
 package com.links.linkservice.logger;
 
-public class Logger {
-    // ...
+public class DatabaseLogger {
+
 }
