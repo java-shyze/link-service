@@ -2,5 +2,7 @@
     "tabWidth": 4,
     "editor.formatOnSave": true,
     "bracketSpacing": true,
-    "printWidth": 70
+    "printWidth": 70,
+    "endOfLine": "auto",
+    "semi": true
 }
