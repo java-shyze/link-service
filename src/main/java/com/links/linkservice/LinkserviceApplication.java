@@ -11,5 +11,4 @@ public class LinkserviceApplication {
 		EnvConfig.loadEnv();
 		SpringApplication.run(LinkserviceApplication.class, args);
 	}
-
 }
