@@ -1,56 +1,55 @@
 package com.links.linkservice.model;
 
 import jakarta.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "links")
+@Table(name = "links", indexes = {
+    @Index(name = "idx_alias", columnList = "alias", unique = true),
+    @Index(name = "idx_created_at", columnList = "createdAt")
+})
 public class Link {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
     private Long id;
 
-    @Column(name = "url", nullable = false)
+    @Column(name = "url", nullable = false, length = 2048)
     private String url;
 
-    @Column(name = "alias", nullable = false)
+    @Column(name = "alias", nullable = false, unique = true, length = 50)
     private String alias;
 
-    public Link() {
-    }
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt;
+
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+
+    public Link() {}
 
     public Link(String url, String alias) {
         this.url = url;
         this.alias = alias;
     }
 
-    public Long getId() {
-        return id;
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
     }
 
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
-    public String getAlias() {
-        return alias;
-    }
-
-    public void setAlias(String alias) {
-        this.alias = alias;
-    }
-
-    @Override
-    public String toString() {
-        return "Link [url = " + url + ", alias = " + alias + "]";
-    }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+    public String getUrl() { return url; }
+    public void setUrl(String url) { this.url = url; }
+    public String getAlias() { return alias; }
+    public void setAlias(String alias) { this.alias = alias; }
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public LocalDateTime getUpdatedAt() { return updatedAt; }
 }
