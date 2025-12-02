@@ -3,6 +3,8 @@ package com.links.linkservice.service;
 import com.links.linkservice.model.Link;
 import com.links.linkservice.repository.LinkRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -62,6 +64,35 @@ public class LinkService {
     public void deleteLink(Long id) {
         linkRepository.deleteById(id);
     }
+
+    // Добавь эти методы:
+
+public Page<Link> getAllLinks(Pageable pageable, String search) {
+    if (search != null && !search.isBlank()) {
+        return linkRepository.findByUrlContainingIgnoreCaseOrAliasContainingIgnoreCase(
+            search, search, pageable);
+    }
+    return linkRepository.findAll(pageable);
+}
+
+public Link updateLink(Long id, String newUrl, String newAlias) {
+    Link link = linkRepository.findById(id)
+        .orElseThrow(() -> new IllegalArgumentException("Link not found"));
+
+    if (newUrl != null && !newUrl.isBlank() && isValidUrl(newUrl)) {
+        link.setUrl(newUrl);
+    }
+
+    if (newAlias != null && !newAlias.isBlank()) {
+        if (linkRepository.findByAlias(newAlias).isPresent() &&
+            !link.getAlias().equals(newAlias)) {
+            throw new IllegalArgumentException("Alias already exists");
+        }
+        link.setAlias(newAlias);
+    }
+
+    return linkRepository.save(link);
+}
 
     
     private String generateUniqueAlias() {
