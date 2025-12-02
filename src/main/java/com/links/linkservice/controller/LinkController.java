@@ -115,7 +115,7 @@ public class LinkController {
      * Вспомогательный метод для формирования короткого URL
      */
     private String getShortUrl(String alias) {
-        return "http://localhost:8081/" + alias;
+        return "http://localhost:8080/" + alias;
     }
 
     /**
