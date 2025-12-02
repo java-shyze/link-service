@@ -3,7 +3,9 @@ package com.links.linkservice.model;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "links")
+@Table(name = "links", indexes = {
+    @Index(name = "idx_alias", columnList = "alias", unique = true)
+})
 public class Link {
 
     @Id
@@ -11,13 +13,13 @@ public class Link {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "url", nullable = false) 
+    @Column(name = "url", nullable = false, length = 2048) 
     private String url;
 
-    @Column(name = "alias", nullable = false)
+    @Column(name = "alias", nullable = false, unique = true, length = 50)
     private String alias;
    
-    public Link () {}
+    public Link() {}
 
     public Link(String url, String alias) {
         this.url = url;
@@ -50,6 +52,19 @@ public class Link {
 
     @Override
     public String toString() {
-        return "Link [url=" + url + ", alias=" + alias + "]";
+        return "Link [id=" + id + ", url=" + url + ", alias=" + alias + "]";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Link link = (Link) o;
+        return id != null && id.equals(link.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
     }
 }
