@@ -2,16 +2,18 @@ package com.links.linkservice.controller;
 
 import com.links.linkservice.dto.CreateLinkRequest;
 import com.links.linkservice.dto.LinkResponse;
+import com.links.linkservice.dto.UpdateLinkRequest;
 import com.links.linkservice.model.Link;
 import com.links.linkservice.service.LinkService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.view.RedirectView;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
-import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api")
@@ -29,8 +31,8 @@ public class LinkController {
         try {
             Link link;
             
-            if (request.getCustomAlias() != null && !request.getCustomAlias().isEmpty()) {
-                link = linkService.createShortLinkWithCustomAlias(request.getUrl(), request.getCustomAlias());
+            if (request.getAlias() != null && !request.getAlias().isEmpty()) {
+                link = linkService.createShortLinkWithCustomAlias(request.getUrl(), request.getAlias());
             } else {
                 link = linkService.createShortLink(request.getUrl());
             }
@@ -39,7 +41,9 @@ public class LinkController {
                 link.getId(),
                 link.getUrl(),
                 link.getAlias(),
-                getShortUrl(link.getAlias())
+                getShortUrl(link.getAlias()),
+                link.getCreatedAt(),
+                link.getUpdatedAt()
             );
             
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -53,18 +57,25 @@ public class LinkController {
      * GET /api/links
      */
     @GetMapping("/links")
-    public ResponseEntity<List<LinkResponse>> getAllLinks() {
-        List<Link> links = linkService.getAllLinks();
-        List<LinkResponse> responses = links.stream()
-            .map(link -> new LinkResponse(
-                link.getId(),
-                link.getUrl(),
-                link.getAlias(),
-                getShortUrl(link.getAlias())
-            ))
-            .collect(Collectors.toList());
-        
-        return ResponseEntity.ok(responses);
+    public ResponseEntity<Page<LinkResponse>> getAllLinks(
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "20") int size,
+        @RequestParam(required = false) String search
+    ) {
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        Page<Link> linkPage = linkService.getAllLinks(pageable, search);
+
+        Page<LinkResponse> response = linkPage.map(link -> new LinkResponse(
+            link.getId(),
+            link.getUrl(),
+            link.getAlias(),
+            getShortUrl(link.getAlias()),
+            link.getCreatedAt(),
+            link.getUpdatedAt()
+        ));
+
+        return ResponseEntity.ok(response);
     }
 
     /**
@@ -79,7 +90,9 @@ public class LinkController {
                     link.getId(),
                     link.getUrl(),
                     link.getAlias(),
-                    getShortUrl(link.getAlias())
+                    getShortUrl(link.getAlias()),
+                    link.getCreatedAt(),
+                    link.getUpdatedAt()
                 );
                 return ResponseEntity.ok(response);
             })
@@ -97,18 +110,31 @@ public class LinkController {
     }
 
     /**
-     * Перенаправление по короткой ссылке
-     * GET /{alias}
+     * Редактирование по id
+     * PATCH /links/{id}
      */
-    @GetMapping("/{alias}")
-    public RedirectView redirect(@PathVariable String alias) {
-        return linkService.getLinkByAlias(alias)
-            .map(link -> {
-                RedirectView redirectView = new RedirectView();
-                redirectView.setUrl(link.getUrl());
-                return redirectView;
-            })
-            .orElseThrow(() -> new RuntimeException("Link not found"));
+
+    @PatchMapping("/links/{id}")
+    public ResponseEntity<LinkResponse> updateLink(
+        @PathVariable Long id,
+        @RequestBody UpdateLinkRequest request
+    ) {
+        if (request.isEmpty()) {
+            throw new IllegalArgumentException("No fields to update");
+        }
+
+        Link updated = linkService.updateLink(id, request.getUrl(), request.getAlias());
+
+        LinkResponse response = new LinkResponse(
+            updated.getId(),    
+            updated.getUrl(),
+            updated.getAlias(),
+            getShortUrl(updated.getAlias()),
+            updated.getCreatedAt(),
+            updated.getUpdatedAt()
+        );
+
+        return ResponseEntity.ok(response);
     }
 
     /**
