@@ -1,13 +1,16 @@
-// src/main/java/com/links/linkservice/controller/GlobalExceptionHandler.java
 package com.links.linkservice.controller;
 
 import com.links.linkservice.dto.ErrorResponse;
+
+import io.swagger.v3.oas.annotations.Hidden;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.server.ResponseStatusException;
 
+@Hidden
 @ControllerAdvice
 public class GlobalExceptionHandler {
 

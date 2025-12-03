@@ -5,6 +5,10 @@ import com.links.linkservice.dto.LinkResponse;
 import com.links.linkservice.dto.UpdateLinkRequest;
 import com.links.linkservice.model.Link;
 import com.links.linkservice.service.LinkService;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
 
+@Tag(name = "Links API", description = "Управление короткими ссылками")
 @RestController
 @RequestMapping("/api")
 public class LinkController {
@@ -22,10 +27,10 @@ public class LinkController {
     @Autowired
     private LinkService linkService;
 
-    /**
-     * Создание короткой ссылки с автоматическим alias
-     * POST /api/links
-     */
+    @Operation(
+        summary = "Создать короткую ссылку",
+        description = "Создаёт новую короткую ссылку. Если alias не указан — генерируется автоматически."
+    )
     @PostMapping("/links")
     public ResponseEntity<LinkResponse> createShortLink(@RequestBody CreateLinkRequest request) {
         try {
@@ -52,10 +57,10 @@ public class LinkController {
         }
     }
 
-    /**
-     * Получение всех ссылок
-     * GET /api/links
-     */
+    @Operation(
+        summary = "Получить все ссылки",
+        description = "Получает все ссылки. Ответ содержит пагинацию"
+    )
     @GetMapping("/links")
     public ResponseEntity<Page<LinkResponse>> getAllLinks(
         @RequestParam(defaultValue = "0") int page,
@@ -78,10 +83,10 @@ public class LinkController {
         return ResponseEntity.ok(response);
     }
 
-    /**
-     * Получение информации о ссылке по alias
-     * GET /api/links/{alias}
-     */
+    @Operation(
+        summary = "Получить ссылку по alias",
+        description = "Получает дополнительную информацию о ссылке по alias"
+    )
     @GetMapping("/links/{alias}")
     public ResponseEntity<LinkResponse> getLinkByAlias(@PathVariable String alias) {
         return linkService.getLinkByAlias(alias)
@@ -99,21 +104,21 @@ public class LinkController {
             .orElse(ResponseEntity.notFound().build());
     }
 
-    /**
-     * Удаление ссылки
-     * DELETE /api/links/{id}
-     */
+    @Operation(
+        summary = "Удалить ссылку",
+        description = "Удаляет ссылку по id"
+    )
     @DeleteMapping("/links/{id}")
     public ResponseEntity<Void> deleteLink(@PathVariable Long id) {
         linkService.deleteLink(id);
         return ResponseEntity.noContent().build();
     }
 
-    /**
-     * Редактирование по id
-     * PATCH /links/{id}
-     */
 
+    @Operation(
+        summary = "Редактировать ссылку",
+        description = "Редактирует ссылку по id"
+    )
     @PatchMapping("/links/{id}")
     public ResponseEntity<LinkResponse> updateLink(
         @PathVariable Long id,
@@ -142,13 +147,5 @@ public class LinkController {
      */
     private String getShortUrl(String alias) {
         return "http://localhost:8080/" + alias;
-    }
-
-    /**
-     * Обработка исключений
-     */
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<String> handleException(RuntimeException e) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
 }
