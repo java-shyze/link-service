@@ -1,5 +1,8 @@
 package com.links.linkservice.controller;
 
+import com.links.linkservice.dto.LinkClickEvent;
+import com.links.linkservice.model.Link;
+import com.links.linkservice.service.KafkaProducerService;
 import com.links.linkservice.service.LinkService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -15,29 +18,71 @@ import org.springframework.web.servlet.view.RedirectView;
 
 @Tag(name = "Redirection API")
 @RestController
-public class RedirectController { 
+public class RedirectController {
 
     @Autowired
     private LinkService linkService;
 
+    @Autowired
+    private KafkaProducerService kafkaProducerService;
+
     @Operation(
         summary = "Перенаправление",
-        description = "Перенаправляет на оригинальную ссылку"
+        description = "Перенаправляет на оригинальную ссылку и отправляет аналитику"
     )
     @GetMapping("/{alias}")
     public RedirectView redirect(
             @PathVariable String alias,
             HttpServletRequest request) {
 
-        return linkService.getLinkByAlias(alias)
-            .map(link -> {
-                RedirectView redirectView = new RedirectView();
-                redirectView.setUrl(link.getUrl());
-                return redirectView;
-            })
+        Link link = linkService.getLinkByAlias(alias)
             .orElseThrow(() -> new ResponseStatusException(
-                HttpStatus.NOT_FOUND, 
+                HttpStatus.NOT_FOUND,
                 "Short link '" + alias + "' not found"
             ));
+
+        sendClickEvent(link, request);
+
+        RedirectView redirectView = new RedirectView();
+        redirectView.setUrl(link.getUrl());
+        return redirectView;
+    }
+
+    /**
+     * Формирование и отправка события клика
+     */
+    private void sendClickEvent(Link link, HttpServletRequest request) {
+        try {
+            LinkClickEvent event = new LinkClickEvent(
+                link.getId(),
+                link.getAlias(),
+                link.getUrl(),
+                getClientIp(request),
+                request.getHeader("User-Agent"),
+                request.getHeader("Referer")
+            );
+
+            kafkaProducerService.sendLinkClickEvent(event);
+        } catch (Exception e) {
+            System.err.println("Failed to send analytics event: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Получение IP адреса клиента (с учетом прокси)
+     */
+    private String getClientIp(HttpServletRequest request) {
+        String ip = request.getHeader("X-Forwarded-For");
+        if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("X-Real-IP");
+        }
+        if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getRemoteAddr();
+        }
+        // Если через прокси, берем первый IP
+        if (ip != null && ip.contains(",")) {
+            ip = ip.split(",")[0].trim();
+        }
+        return ip;
     }
 }
