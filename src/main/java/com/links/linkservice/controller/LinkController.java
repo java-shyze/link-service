@@ -21,7 +21,8 @@ import org.springframework.data.domain.Sort;
 
 @Tag(name = "Links API", description = "Управление короткими ссылками")
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/v1")  
+@CrossOrigin(origins = "http://localhost:5173")
 public class LinkController {
 
     @Autowired
@@ -33,28 +34,24 @@ public class LinkController {
     )
     @PostMapping("/links")
     public ResponseEntity<LinkResponse> createShortLink(@RequestBody CreateLinkRequest request) {
-        try {
-            Link link;
-            
-            if (request.getAlias() != null && !request.getAlias().isEmpty()) {
-                link = linkService.createShortLinkWithCustomAlias(request.getUrl(), request.getAlias());
-            } else {
-                link = linkService.createShortLink(request.getUrl());
-            }
-            
-            LinkResponse response = new LinkResponse(
-                link.getId(),
-                link.getUrl(),
-                link.getAlias(),
-                getShortUrl(link.getAlias()),
-                link.getCreatedAt(),
-                link.getUpdatedAt()
-            );
-            
-            return ResponseEntity.status(HttpStatus.CREATED).body(response);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
+        Link link;
+        
+        if (!request.getAlias().isEmpty()) {
+            link = linkService.createShortLinkWithCustomAlias(request.getUrl(), request.getAlias());
+        } else {
+            link = linkService.createShortLink(request.getUrl());
         }
+        
+        LinkResponse response = new LinkResponse(
+            link.getId(),
+            link.getUrl(),
+            link.getAlias(),
+            getShortUrl(link.getAlias()),
+            link.getCreatedAt(),
+            link.getUpdatedAt()
+        );
+        
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @Operation(

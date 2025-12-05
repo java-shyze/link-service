@@ -27,6 +27,10 @@ public class LinkService {
             throw new IllegalArgumentException("Invalid URL format");
         }
 
+        if (linkRepository.findByUrl(url).isPresent()) {
+            throw new IllegalArgumentException("URL already exists");
+        }
+
         String alias = generateUniqueAlias();
         Link link = new Link(url, alias);
         return linkRepository.save(link);
@@ -65,34 +69,33 @@ public class LinkService {
         linkRepository.deleteById(id);
     }
 
-    // Добавь эти методы:
 
-public Page<Link> getAllLinks(Pageable pageable, String search) {
-    if (search != null && !search.isBlank()) {
-        return linkRepository.findByUrlContainingIgnoreCaseOrAliasContainingIgnoreCase(
-            search, search, pageable);
-    }
-    return linkRepository.findAll(pageable);
-}
-
-public Link updateLink(Long id, String newUrl, String newAlias) {
-    Link link = linkRepository.findById(id)
-        .orElseThrow(() -> new IllegalArgumentException("Link not found"));
-
-    if (newUrl != null && !newUrl.isBlank() && isValidUrl(newUrl)) {
-        link.setUrl(newUrl);
-    }
-
-    if (newAlias != null && !newAlias.isBlank()) {
-        if (linkRepository.findByAlias(newAlias).isPresent() &&
-            !link.getAlias().equals(newAlias)) {
-            throw new IllegalArgumentException("Alias already exists");
+    public Page<Link> getAllLinks(Pageable pageable, String search) {
+        if (search != null && !search.isBlank()) {
+            return linkRepository.findByUrlContainingIgnoreCaseOrAliasContainingIgnoreCase(
+                search, search, pageable);
         }
-        link.setAlias(newAlias);
+        return linkRepository.findAll(pageable);
     }
 
-    return linkRepository.save(link);
-}
+    public Link updateLink(Long id, String newUrl, String newAlias) {
+        Link link = linkRepository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("Link not found"));
+
+        if (newUrl != null && !newUrl.isBlank() && isValidUrl(newUrl)) {
+            link.setUrl(newUrl);
+        }
+
+        if (newAlias != null && !newAlias.isBlank()) {
+            if (linkRepository.findByAlias(newAlias).isPresent() &&
+                !link.getAlias().equals(newAlias)) {
+                throw new IllegalArgumentException("Alias already exists");
+            }
+            link.setAlias(newAlias);
+        }
+
+        return linkRepository.save(link);
+    }
 
     
     private String generateUniqueAlias() {

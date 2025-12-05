@@ -18,6 +18,7 @@ public interface LinkRepository extends JpaRepository<Link, Long> {
     // void deleteById(Long id);    
     
     Optional<Link> findByAlias(String alias);
+    Optional<Link> findByUrl(String url);
     boolean existsByAlias(String alias);
     Page<Link> findByUrlContainingIgnoreCaseOrAliasContainingIgnoreCase(
         String url, String alias, Pageable pageable);
