@@ -21,7 +21,8 @@ import org.springframework.data.domain.Sort;
 
 @Tag(name = "Links API", description = "Управление короткими ссылками")
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/v1")  
+@CrossOrigin(origins = "http://localhost:5173")
 public class LinkController {
 
     @Autowired
@@ -33,28 +34,24 @@ public class LinkController {
     )
     @PostMapping("/links")
     public ResponseEntity<LinkResponse> createShortLink(@RequestBody CreateLinkRequest request) {
-        try {
-            Link link;
-            
-            if (request.getAlias() != null && !request.getAlias().isEmpty()) {
-                link = linkService.createShortLinkWithCustomAlias(request.getUrl(), request.getAlias());
-            } else {
-                link = linkService.createShortLink(request.getUrl());
-            }
-            
-            LinkResponse response = new LinkResponse(
-                link.getId(),
-                link.getUrl(),
-                link.getAlias(),
-                getShortUrl(link.getAlias()),
-                link.getCreatedAt(),
-                link.getUpdatedAt()
-            );
-            
-            return ResponseEntity.status(HttpStatus.CREATED).body(response);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
+        Link link;
+        
+        if (!request.getAlias().isEmpty()) {
+            link = linkService.createShortLinkWithCustomAlias(request.getUrl(), request.getAlias());
+        } else {
+            link = linkService.createShortLink(request.getUrl());
         }
+        
+        LinkResponse response = new LinkResponse(
+            link.getId(),
+            link.getUrl(),
+            link.getAlias(),
+            getShortUrl(link.getAlias()),
+            link.getCreatedAt(),
+            link.getUpdatedAt()
+        );
+        
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @Operation(
@@ -63,12 +60,12 @@ public class LinkController {
     )
     @GetMapping("/links")
     public ResponseEntity<Page<LinkResponse>> getAllLinks(
-        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "1") int page,
         @RequestParam(defaultValue = "20") int size,
         @RequestParam(required = false) String search
     ) {
 
-        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        Pageable pageable = PageRequest.of(page-1, size, Sort.by("createdAt").descending());
         Page<Link> linkPage = linkService.getAllLinks(pageable, search);
 
         Page<LinkResponse> response = linkPage.map(link -> new LinkResponse(
