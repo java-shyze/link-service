@@ -26,6 +26,9 @@ public class Link {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @Column(name = "visits", nullable = false, columnDefinition = "bigint default 0")
+    private Long visits = 0L;
+
     public Link() {}
 
     public Link(String url, String alias) {
@@ -52,4 +55,6 @@ public class Link {
     public void setAlias(String alias) { this.alias = alias; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }
+    public Long getVisits() {return visits;}
+    public void setVisits(Long visits) {this.visits = visits;}
 }

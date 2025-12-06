@@ -43,6 +43,8 @@ public class RedirectController {
                 "Short link '" + alias + "' not found"
             ));
 
+        linkService.incrementVisits(alias);
+
         sendClickEvent(link, request);
 
         RedirectView redirectView = new RedirectView();

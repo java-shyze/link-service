@@ -2,10 +2,14 @@ package com.links.linkservice.service;
 
 import com.links.linkservice.model.Link;
 import com.links.linkservice.repository.LinkRepository;
+
+
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -20,6 +24,11 @@ public class LinkService {
     private static final String CHARACTERS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     private static final int ALIAS_LENGTH = 6;
     private static final int MAX_RETRIES = 10;
+
+    @Transactional
+    public void incrementVisits(String alias) {
+        linkRepository.incrementVisitsByAlias(alias);
+    }
 
 
     public Link createShortLink(String url) {

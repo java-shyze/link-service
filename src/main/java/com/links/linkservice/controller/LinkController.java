@@ -48,7 +48,8 @@ public class LinkController {
             link.getAlias(),
             getShortUrl(link.getAlias()),
             link.getCreatedAt(),
-            link.getUpdatedAt()
+            link.getUpdatedAt(),
+            link.getVisits()
         );
         
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -74,7 +75,8 @@ public class LinkController {
             link.getAlias(),
             getShortUrl(link.getAlias()),
             link.getCreatedAt(),
-            link.getUpdatedAt()
+            link.getUpdatedAt(),
+            link.getVisits()
         ));
 
         return ResponseEntity.ok(response);
@@ -94,7 +96,8 @@ public class LinkController {
                     link.getAlias(),
                     getShortUrl(link.getAlias()),
                     link.getCreatedAt(),
-                    link.getUpdatedAt()
+                    link.getUpdatedAt(),
+                    link.getVisits()
                 );
                 return ResponseEntity.ok(response);
             })
@@ -133,7 +136,8 @@ public class LinkController {
             updated.getAlias(),
             getShortUrl(updated.getAlias()),
             updated.getCreatedAt(),
-            updated.getUpdatedAt()
+            updated.getUpdatedAt(),
+            updated.getVisits()
         );
 
         return ResponseEntity.ok(response);

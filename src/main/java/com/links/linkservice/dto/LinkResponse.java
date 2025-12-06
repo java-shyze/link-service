@@ -9,16 +9,18 @@ public class LinkResponse {
     private String shortUrl;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private Long visits;
 
     public LinkResponse() {}
 
-    public LinkResponse(Long id, String originalUrl, String alias, String shortUrl, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public LinkResponse(Long id, String originalUrl, String alias, String shortUrl, LocalDateTime createdAt, LocalDateTime updatedAt, Long visits) {
         this.id = id;
         this.originalUrl = originalUrl;
         this.alias = alias;
         this.shortUrl = shortUrl;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.visits = visits != null ? visits : 0L;
     }
 
     public Long getId() {
@@ -67,5 +69,13 @@ public class LinkResponse {
 
     public void setUpdatedAt(LocalDateTime updatedAt){
         this.updatedAt = updatedAt;
+    }
+
+    public Long getVisits() { 
+        return visits; 
+    }
+
+    public void setVisits(Long visits) { 
+        this.visits = visits;
     }
 }

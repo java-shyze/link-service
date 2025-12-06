@@ -8,6 +8,9 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 // repository methods are provided by Spring Data JPA
 @Repository
@@ -22,4 +25,8 @@ public interface LinkRepository extends JpaRepository<Link, Long> {
     boolean existsByAlias(String alias);
     Page<Link> findByUrlContainingIgnoreCaseOrAliasContainingIgnoreCase(
         String url, String alias, Pageable pageable);
+
+    @Modifying
+    @Query("UPDATE Link l SET l.visits = l.visits + 1 WHERE l.alias = :alias")
+    int incrementVisitsByAlias(@Param("alias") String alias);
 }
