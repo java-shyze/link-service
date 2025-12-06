@@ -2,6 +2,7 @@ package com.links.linkservice.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 public class LinkClickEvent {
     private Long linkId;
@@ -19,7 +20,7 @@ public class LinkClickEvent {
     private LocalDateTime clickedAt;
 
     public LinkClickEvent() {
-        this.clickedAt = LocalDateTime.now();
+        this.clickedAt = LocalDateTime.now(ZoneId.of("Europe/Moscow"));
     }
 
     public LinkClickEvent(Long linkId, String alias, String originalUrl, 
@@ -30,7 +31,7 @@ public class LinkClickEvent {
         this.ipAddress = ipAddress;
         this.userAgent = userAgent;
         this.referer = referer;
-        this.clickedAt = LocalDateTime.now();
+        this.clickedAt = LocalDateTime.now(ZoneId.of("Europe/Moscow"));
     }
 
     public Long getLinkId() { return linkId; }

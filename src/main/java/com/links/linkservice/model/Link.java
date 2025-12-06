@@ -2,6 +2,7 @@ package com.links.linkservice.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 @Entity
 @Table(name = "links", indexes = {
@@ -38,13 +39,13 @@ public class Link {
 
     @PrePersist
     protected void onCreate() {
-        createdAt = LocalDateTime.now();
-        updatedAt = LocalDateTime.now();
+        createdAt = LocalDateTime.now(ZoneId.of("Europe/Moscow"));
+        updatedAt = LocalDateTime.now(ZoneId.of("Europe/Moscow"));
     }
 
     @PreUpdate
     protected void onUpdate() {
-        updatedAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now(ZoneId.of("Europe/Moscow"));
     }
 
     public Long getId() { return id; }

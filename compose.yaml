@@ -1,46 +1,50 @@
 services:
-  app:
-    build: .
-    container_name: linkservice-app
-    ports:
-      - "8080:8080"
-    environment:
-      SPRING_DATASOURCE_URL: ${LINK_DB_URL}
-      SPRING_DATASOURCE_USERNAME: ${LINK_DB_USERNAME}
-      SPRING_DATASOURCE_PASSWORD: ${LINK_DB_PASSWORD}
-      SPRING_LIQUIBASE_ENABLED: ${LINK_DB_LIQUIBASE_ENABLED}
-    depends_on:
-      db:
-        condition: service_healthy
-    networks:
-      - linkservice-network
-      - kafka-network
-    restart: on-failure
+    app:
+        build: .
+        container_name: linkservice-app
+        ports:
+            - "8080:8080"
+        environment:
+            SPRING_DATASOURCE_URL: ${LINK_DB_URL}
+            SPRING_DATASOURCE_USERNAME: ${LINK_DB_USERNAME}
+            SPRING_DATASOURCE_PASSWORD: ${LINK_DB_PASSWORD}
+            SPRING_LIQUIBASE_ENABLED: ${LINK_DB_LIQUIBASE_ENABLED}
+        depends_on:
+            db:
+                condition: service_healthy
+        networks:
+            - linkservice-network
+            - kafka-network
+        restart: on-failure
 
-  db:
-    image: postgres:15
-    container_name: postgres-db
-    environment:
-      POSTGRES_DB: ${LINK_DB_NAME}
-      POSTGRES_USER: ${LINK_DB_USERNAME}
-      POSTGRES_PASSWORD: ${LINK_DB_PASSWORD}
-      KAFKA_BOOTSTRAP_SERVERS: redpanda:9092
-    ports:
-      - "5432:5432"
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-    networks:
-      - linkservice-network
-    healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}" ]
-      interval: 5s
-      timeout: 5s
-      retries: 10
+    db:
+        image: postgres:15
+        container_name: postgres-db
+        environment:
+            POSTGRES_DB: ${LINK_DB_NAME}
+            POSTGRES_USER: ${LINK_DB_USERNAME}
+            POSTGRES_PASSWORD: ${LINK_DB_PASSWORD}
+            KAFKA_BOOTSTRAP_SERVERS: redpanda:9092
+        ports:
+            - "5432:5432"
+        volumes:
+            - pgdata:/var/lib/postgresql/data
+        networks:
+            - linkservice-network
+        healthcheck:
+            test:
+                [
+                    "CMD-SHELL",
+                    "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}",
+                ]
+            interval: 5s
+            timeout: 5s
+            retries: 10
 
 volumes:
-  pgdata:
+    pgdata:
 
 networks:
-  linkservice-network:
-  kafka-network:
-    external: true
+    linkservice-network:
+    kafka-network:
+        external: true
