@@ -60,12 +60,12 @@ public class LinkController {
     )
     @GetMapping("/links")
     public ResponseEntity<Page<LinkResponse>> getAllLinks(
-        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "1") int page,
         @RequestParam(defaultValue = "20") int size,
         @RequestParam(required = false) String search
     ) {
 
-        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        Pageable pageable = PageRequest.of(page-1, size, Sort.by("createdAt").descending());
         Page<Link> linkPage = linkService.getAllLinks(pageable, search);
 
         Page<LinkResponse> response = linkPage.map(link -> new LinkResponse(
