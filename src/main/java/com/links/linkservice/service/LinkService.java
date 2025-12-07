@@ -55,6 +55,10 @@ public class LinkService {
             throw new IllegalArgumentException("Custom alias cannot be empty");
         }
 
+        if (linkRepository.findByUrl(url).isPresent()) {
+            throw new IllegalArgumentException("URL already exists");
+        }
+
         if (linkRepository.findByAlias(customAlias).isPresent()) {
             throw new IllegalArgumentException("Alias already exists");
         }
@@ -75,6 +79,10 @@ public class LinkService {
 
   
     public void deleteLink(Long id) {
+        if (linkRepository.findById(id).isEmpty()) {
+            throw new IllegalArgumentException("Link with such id doesnt exist");
+        }
+
         linkRepository.deleteById(id);
     }
 
@@ -102,6 +110,8 @@ public class LinkService {
             }
             link.setAlias(newAlias);
         }
+
+        link.setVisits(0L);
 
         return linkRepository.save(link);
     }

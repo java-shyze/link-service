@@ -111,7 +111,7 @@ public class LinkController {
     @DeleteMapping("/links/{id}")
     public ResponseEntity<Void> deleteLink(@PathVariable Long id) {
         linkService.deleteLink(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok().build();
     }
 
 
@@ -127,7 +127,7 @@ public class LinkController {
         if (request.isEmpty()) {
             throw new IllegalArgumentException("No fields to update");
         }
-
+        
         Link updated = linkService.updateLink(id, request.getUrl(), request.getAlias());
 
         LinkResponse response = new LinkResponse(

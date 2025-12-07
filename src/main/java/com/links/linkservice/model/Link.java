@@ -9,6 +9,7 @@ import java.time.ZoneId;
     @Index(name = "idx_alias", columnList = "alias", unique = true),
     @Index(name = "idx_created_at", columnList = "createdAt")
 })
+
 public class Link {
 
     @Id
