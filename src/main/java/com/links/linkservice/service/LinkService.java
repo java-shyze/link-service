@@ -72,6 +72,10 @@ public class LinkService {
         return linkRepository.findByAlias(alias);
     }
 
+    public Optional<Link> getLinkById(Long id) {
+        return linkRepository.findById(id);
+    }
+
   
     public List<Link> getAllLinks() {
         return linkRepository.findAll();

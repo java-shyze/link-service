@@ -20,6 +20,7 @@ public interface LinkRepository extends JpaRepository<Link, Long> {
     // List<Link> findAll();                    
     // void deleteById(Long id);    
     
+    Optional<Link> findById(Long id);  
     Optional<Link> findByAlias(String alias);
     Optional<Link> findByUrl(String url);
     boolean existsByAlias(String alias);

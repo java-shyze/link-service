@@ -83,12 +83,12 @@ public class LinkController {
     }
 
     @Operation(
-        summary = "Получить ссылку по alias",
-        description = "Получает дополнительную информацию о ссылке по alias"
+        summary = "Получить ссылку по id",
+        description = "Получает дополнительную информацию о ссылке по id"
     )
-    @GetMapping("/links/{alias}")
-    public ResponseEntity<LinkResponse> getLinkByAlias(@PathVariable String alias) {
-        return linkService.getLinkByAlias(alias)
+    @GetMapping("/links/{id}")
+    public ResponseEntity<LinkResponse> getLinkById(@PathVariable Long id) {
+        return linkService.getLinkById(id)
             .map(link -> {
                 LinkResponse response = new LinkResponse(
                     link.getId(),
