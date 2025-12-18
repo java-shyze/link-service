@@ -15,8 +15,7 @@ import org.springframework.data.repository.query.Param;
 // repository methods are provided by Spring Data JPA
 @Repository
 public interface LinkRepository extends JpaRepository<Link, Long> {
-    // Link save(Link link);
-    // Optional<Link> findById(Long id);        
+    // Link save(Link link);        
     // List<Link> findAll();                    
     // void deleteById(Long id);    
     

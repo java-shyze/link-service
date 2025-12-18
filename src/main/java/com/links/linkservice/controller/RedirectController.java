@@ -73,7 +73,7 @@ public class RedirectController {
     }
 
     /**
-     * Получение IP адреса клиента (с учетом прокси)
+     * Получение IP адреса клиента
      */
     private String getClientIp(HttpServletRequest request) {
         String ip = request.getHeader("X-Forwarded-For");

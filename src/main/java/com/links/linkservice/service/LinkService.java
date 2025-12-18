@@ -3,8 +3,6 @@ package com.links.linkservice.service;
 import com.links.linkservice.model.Link;
 import com.links.linkservice.repository.LinkRepository;
 
-
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
